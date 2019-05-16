@@ -1,3 +1,5 @@
+# config/environment.rb
+
 # Load the Rails application.
 require_relative 'application'
 

@@ -8,7 +8,7 @@ module RateLimiter
 			@limiter = RateLimiter::Limiter.new(
 				max_requests = MAX_REQUESTS,
 				max_period = MAX_PERIOD,
-				cache = Cache.new,
+				cache = RedisCache.new,
 				requestor_id = requestor_id
 			)
 		end

@@ -6,7 +6,7 @@ class HomeController < ActionController::Base
 	include RateLimiter
 
 	def rate_limit
-		rate_limiter_client = RateLimiter::Client.new(request.ip)
+		rate_limiter_client = RateLimiter::Client.new(REQUESTS, PERIOD, request.ip)
 		if rate_limiter_client.is_blocked?
 			render status: TOO_MANY_REQUESTS, plain: rate_limiter_client.blocked_message
 		else
@@ -15,6 +15,6 @@ class HomeController < ActionController::Base
 	end
 
 	def index
-		render plain: 'You are welcome!'
+		render status: OK, plain: "You are welcome!"
 	end
 end

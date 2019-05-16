@@ -1,7 +1,7 @@
-# app/lib/rate_limiter/cache.rb
+# app/lib/rate_limiter/redis_cache.rb
 
 module RateLimiter
-	class Cache
+	class RedisCache
 		attr_reader :container
 		
 		def initialize(container = $redis)

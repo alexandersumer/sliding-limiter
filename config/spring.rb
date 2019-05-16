@@ -1,3 +1,5 @@
+# config/spring.rb
+
 %w[
   .ruby-version
   .rbenv-vars

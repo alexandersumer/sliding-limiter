@@ -6,7 +6,7 @@ class MockHomeController < ActionController::Base
 	include RateLimiter
 
 	def rate_limit
-		limiter_client = RateLimiter::LimiterClient.new(3, 10, request.ip)
+		limiter_client = RateLimiter::LimiterClient.new(3, 3, request.ip)
 		if limiter_client.is_blocked?
 			render status: TOO_MANY_REQUESTS, plain: limiter_client.blocked_message
 		else
@@ -24,8 +24,8 @@ RSpec.describe MockHomeController, type: :controller do
 		Rails.application.routes.draw { get 'index' => 'mock_home#index' }
 	end
 
-	describe 'limit requestor' do
-		it 'block requestor if more than 3 requests within 10 seconds' do
+	describe 'rate_limit' do
+		it 'block requestor if more than 3 requests within 3 seconds' do
 			get :index
 			expect(response.status).to eq OK
 			expect(response.body).to eq "You are welcome!"
@@ -40,7 +40,25 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
-			expect(response.body).to eq "Rate limit exceeded. Try again in 10 seconds"
+			expect(response.body).to eq "Rate limit exceeded. Try again in 3 seconds"
+
+			sleep(3)
+
+			get :index
+			expect(response.status).to eq OK
+			expect(response.body).to eq "You are welcome!"
+
+			get :index
+			expect(response.status).to eq OK
+			expect(response.body).to eq "You are welcome!"
+
+			get :index
+			expect(response.status).to eq OK
+			expect(response.body).to eq "You are welcome!"
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+			expect(response.body).to eq "Rate limit exceeded. Try again in 3 seconds"
 		end
 	end
 end

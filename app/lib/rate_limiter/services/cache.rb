@@ -8,16 +8,18 @@ module RateLimiter
             @cache = cache
         end
 
-        def block_requestor(key, period)
-            cache.set(key, 1, period)
-        end
-
         def get_count(key)
             cache.get(key)
         end
 
-        def initialize_requestor(key, value, period)
-            cache.set(key, value, period)
+        def block_requestor(key, period)
+            puts "#{key}"
+            puts "#{period}"
+            cache.set(key, 1, period)
+        end
+
+        def initialize_requestor(key, period)
+            cache.set(key, 1, period)
         end
 
         def increment_count(key)

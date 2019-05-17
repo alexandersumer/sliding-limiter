@@ -2,27 +2,31 @@
 
 module RateLimiter
 	class RedisClient
-		attr_reader :cache
+		attr_reader :redis
 		
 		def initialize
-			@cache = $redis
+			@redis = $redis
 		end
 
 		def get(key)
-			cache.get(key)
+			redis.get(key)
 		end
 
 		def set(key, value, period)
-			cache.set(key, value)
-			cache.expire(key, period)
+			redis.set(key, value)
+			redis.expire(key, period)
 		end
 
 		def incr(key)
-			cache.incr(key)
+			redis.incr(key)
 		end
 
 		def ttl(key)
-			cache.ttl(key)
+			redis.ttl(key)
+		end
+		
+		def flushdb
+			redis.flushdb
 		end
 	end
 end

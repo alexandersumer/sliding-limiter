@@ -14,16 +14,13 @@ module RateLimiter
 		end
 
 		def is_blocked?
-			if cache.get_count(blocked_requestor_key)
-				return true
-			else
-				return false
-			end
+			return true if cache.get_count(blocked_requestor_key)
+			false
 		end
 
 		def increment
 			count = cache.get_count(allowed_requestor_key)
-			cache.initialize_requestor(allowed_requestor_key, 1, period) unless count
+			cache.initialize_requestor(allowed_requestor_key, period) unless count
 			if count.to_i >= requests
 				cache.block_requestor(blocked_requestor_key, period)
 			else

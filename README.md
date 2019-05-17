@@ -1,4 +1,4 @@
-# RateLimiter module for Ruby on Rails
+# Rate limiter module for Ruby on Rails
 
 ## High level design
 

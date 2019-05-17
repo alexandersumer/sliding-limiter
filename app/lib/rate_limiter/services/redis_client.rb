@@ -22,7 +22,9 @@ module RateLimiter
 		end
 
 		def ttl(key)
-			redis.ttl(key)
+			ttl = redis.ttl(key)
+			return ttl if ttl >= 0
+            return nil
 		end
 		
 		def flushdb

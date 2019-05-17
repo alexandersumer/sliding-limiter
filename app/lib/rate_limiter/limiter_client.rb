@@ -1,10 +1,10 @@
-# app/lib/rate_limiter/client.rb
+# app/lib/rate_limiter/limiter_client.rb
 
 require_relative './services/limiter'
 require_relative './services/redis_client'
 
 module RateLimiter
-	class Client
+	class LimiterClient
 		attr_reader :limiter
 
 		def initialize(requests, period, requestor_id, cache_client = RedisClient.new)

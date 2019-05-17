@@ -4,8 +4,8 @@ module RateLimiter
     class Cache
         attr_reader :cache
 
-        def initialize(cache)
-            @cache = cache
+        def initialize(cache_client = RedisClient.new)
+            @cache = cache_client
         end
 
         def get_count(key)
@@ -13,12 +13,10 @@ module RateLimiter
         end
 
         def block_requestor(key, period)
-            puts "#{key}"
-            puts "#{period}"
             cache.set(key, 1, period)
         end
 
-        def initialize_requestor(key, period)
+        def init_requestor(key, period)
             cache.set(key, 1, period)
         end
 
@@ -28,6 +26,10 @@ module RateLimiter
 
         def get_cooldown(key)
             cache.ttl(key)
+        end
+
+        def flushdb
+            cache.flushdb
         end
     end
 end

@@ -28,37 +28,29 @@ RSpec.describe MockHomeController, type: :controller do
 		it 'block requestor if more than 3 requests within 3 seconds' do
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
-			expect(response.body).to eq "Rate limit exceeded. Try again in 3 seconds"
 
 			sleep(3)
 
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq OK
-			expect(response.body).to eq "You are welcome!"
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
-			expect(response.body).to eq "Rate limit exceeded. Try again in 3 seconds"
 		end
 	end
 end

@@ -22,9 +22,8 @@ module RateLimiter
 		end
 
 		def ttl(key)
-			ttl = redis.ttl(key)
-			return ttl if ttl >= 0
-            return nil
+			expires_in = redis.ttl(key)
+			expires_in >= 0 ? expires_in : nil
 		end
 		
 		def flushdb

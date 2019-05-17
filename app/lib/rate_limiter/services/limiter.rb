@@ -14,11 +14,7 @@ module RateLimiter
 		end
 
 		def is_blocked?
-			if cache.get_count(blocked_requestor_key)
-				return true
-			else
-				return false
-			end
+			cache.get_count(blocked_requestor_key) ? true : false
 		end
 
 		def increment
@@ -33,19 +29,15 @@ module RateLimiter
 
 		def blocked_message
 			cooldown = cache.get_cooldown(blocked_requestor_key)
-			if cooldown
-				"Rate limit exceeded. Try again in #{cooldown} seconds"
-			else
-				"Rate limit exceeded. Try again later."
-			end
+			"Rate limit exceeded. Try again in #{cooldown} seconds"
 		end
 
 		def allowed_requestor_key
-			return "allowed_requestor_#{requestor_id}"
+			"allowed_requestor_#{requestor_id}"
 		end
 
 		def blocked_requestor_key
-			return "blocked_requestor_#{requestor_id}"
+			"blocked_requestor_#{requestor_id}"
 		end
 	end
 end

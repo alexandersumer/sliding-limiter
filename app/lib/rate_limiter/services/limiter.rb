@@ -20,8 +20,11 @@ module RateLimiter
 		def increment
 			count = cache.get_count(allowed_requestor_key)
 			cache.init_requestor(allowed_requestor_key, period) unless count
+
+			cooldown = cache.get_cooldown(allowed_requestor_key)
+
 			if count.to_i >= requests
-				cache.block_requestor(blocked_requestor_key, period)
+				cache.block_requestor(blocked_requestor_key, cooldown)
 			else
 				cache.increment_count(allowed_requestor_key)
 			end

@@ -6,7 +6,7 @@ module RateLimiter
 	class Limiter
 		attr_reader :requests, :period, :requestor_id, :cache
 
-		def initialize(requests, period, requestor_id, cache_client)
+		def initialize(requests, period, requestor_id, cache_client = RedisClient.new)
 			@requests = requests
 			@period = period
 			@requestor_id = requestor_id
@@ -23,7 +23,7 @@ module RateLimiter
 
 		def increment
 			count = cache.get_count(allowed_requestor_key)
-			cache.initialize_requestor(allowed_requestor_key, 1, period) unless count
+			cache.init_requestor(allowed_requestor_key, period) unless count
 			if count.to_i >= requests
 				cache.block_requestor(blocked_requestor_key, period)
 			else
@@ -33,7 +33,11 @@ module RateLimiter
 
 		def blocked_message
 			cooldown = cache.get_cooldown(blocked_requestor_key)
-			"Rate limit exceeded. Try again in #{cooldown} seconds"
+			if cooldown
+				"Rate limit exceeded. Try again in #{cooldown} seconds"
+			else
+				"Rate limit exceeded. Try again later."
+			end
 		end
 
 		def allowed_requestor_key

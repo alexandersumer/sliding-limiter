@@ -26,7 +26,7 @@ module RateLimiter
 			expires_in >= 0 ? expires_in : nil
 		end
 		
-		def flushdb
+		def flush
 			redis.flushdb
 		end
 	end

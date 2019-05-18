@@ -28,8 +28,8 @@ module RateLimiter
             cache.ttl(key)
         end
 
-        def flushdb
-            cache.flushdb
+        def flush
+            cache.flush
         end
     end
 end

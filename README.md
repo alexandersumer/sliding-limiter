@@ -120,7 +120,7 @@ In terms of running this rate limiting module on a distributed systems, redis wi
 
 In this implementation I provide the option to use a local memory cache. This is actually not a terrible option as long as we have a services that regularly synchronises the counts in an eventually consistent matter. This is because load balancers have a sticky session these days, so a locasl memory cache will work fairly without having to deal with network delay associated with redis sycnronisation.
 
-## Limitations and Enhancements
+## Limitations and enhancements
 
 One limitation is to do with the way I have set up the unit tests. The tests require on a live instance of redis running. Most of the tests are time based, and simmulate time by running `sleep(x)`. In order to reset the rate limiter counts from one test to the next, `$redis.flushdb` is used, which isn't ideal because this couples the tests with redis, but ideally I want the tests to be cache agnostic.
 

@@ -6,22 +6,42 @@ require_relative './services/local_mem_cache'
 
 module RateLimiter
 	class LimiterClient
-		def initialize(key, requestor_id, threshold, interval, accuracy = 4)
-			local_mem_cache = LocalMemoryCache.new
-			redis_cache = RedisCache.new
-			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, redis_cache)
+		# Create a LimiterClient object.
+		#
+		# @param [String]	key			A unique identifier for Limiter
+		# @param [Integer]	threshold	Maximum number of allowed requests per time window
+		# @param [Integer]	interval	Number of seconds per time window
+		# @param [Integer]	accuracy	Higher value trades performance for more accuracy
+		#								A value of 1 means 1 second granularity
+		#								A value of 4 means 1/4 second granularity
+		# @param [Object]	cache		An instance of a cache object mapping keys to
+		#								hash maps, providing the following functionality:
+		#								increment(parent_key, child_key):
+		#									increments value associated with child_key by 1 if exists,
+		#									else create a new entry and set it to 1
+		#								get_keys(parent_key): retreives list of keys
+		#								get_values(parent_key): retreives a list of values
+		#								delete(parent_key, to_delete):
+		#									delete entries associated with keys in to_deelte
+		def initialize(key, threshold, interval, accuracy, cache = RedisCache.new)
+			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)
 		end
 
+		# Check if a particular requestor is allowed or blocked
+		# Side effect: Deletes expired buckets
 		def is_blocked?(requestor_id)
-			@limiter.is_blocked?(requestor_id)
+			return @limiter.is_blocked?(requestor_id)
 		end
 
+		# Get an error message and cooldown in seconds for a particular blocked requestor
+		def get_error_message(requestor_id)
+			return @limiter.get_error_message(requestor_id)
+		end
+
+		# Increment the request count for a particular requestor by 1 if requestor exists,
+		# if this is the first request by this requestor then create a new entry and set it to 1
 		def increment(requestor_id)
 			@limiter.increment(requestor_id)
-		end
-
-		def get_error_message(requestor_id)
-			@limiter.get_error_message(requestor_id)
 		end
 	end
 end

@@ -10,14 +10,13 @@ module RateLimiter
             @registry = {}
         end
 
-        def set(key, value = nil)
+        def set(key, value)
             @registry[key.to_s] = value
-            self
         end
 
-        def get(key, default = nil)
+        def get(key)
             return @registry[key.to_s] if @registry.key?(key.to_s)
-            default
+            nil
         end
     end
 end

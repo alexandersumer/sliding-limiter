@@ -1,4 +1,4 @@
-# Rate limiter module for Ruby on Rails
+# Sliding window rate limiter module for Ruby on Rails
 
 ## Usage
 

@@ -6,11 +6,11 @@ class HomeController < ActionController::Base
 	include RateLimiter
 
 	def rate_limit
-		limiter_client = RateLimiter::LimiterClient.new(REQUESTS, PERIOD, request.ip)
-		if limiter_client.is_blocked?
-			render status: TOO_MANY_REQUESTS, plain: limiter_client.blocked_message
+		limiter = RateLimiter::LimiterClient.new("unique_id", request.ip, THRESHOLD, INTERVAL)
+		if limiter.is_blocked?(request.ip)
+			render status: TOO_MANY_REQUESTS, plain: limiter.get_error_message(request.ip)
 		else
-			limiter_client.increment
+			limiter.increment(request.ip)
 		end
 	end
 

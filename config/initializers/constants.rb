@@ -1,6 +1,6 @@
 # config/initializers/constants.rb
 
-REQUESTS = 100
-PERIOD = 3600
+THRESHOLD = 5
+INTERVAL = 30
 TOO_MANY_REQUESTS = 429
 OK = 200

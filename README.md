@@ -4,7 +4,7 @@ Hello, this is my first ever rails application so I hope I didn't reak too many 
 
 ## Application Usage
 
-The following usage instructions are for Mac.
+The following usage instructions are for Mac (will be similar to Linux).
 
 This application requires: Ruby, Rails, Bundler and Redis.
 
@@ -26,9 +26,7 @@ To start the application, run the command:
 
 Navigate to `http://localhost:3000/` and the message "You are welcome!" should be printed. If 100 requests are made to `http://localhost:3000/` within 1 hour, a 429 HTTP Status is returned along with the error message: "Rate limit exceeded. Try again in #{cooldown} seconds"
 
-If you are running this on a machine that is not a Mac, then a docker-compose.yml file is included for you to run this application through docker. Just navigate to the application root directory and run the command:
-
-`$ docker-compose up`
+I am in the process of setting up docker so that you can run this anywhere!
 
 
 ## Module Usage

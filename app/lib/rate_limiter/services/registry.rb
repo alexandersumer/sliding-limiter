@@ -2,9 +2,10 @@
 
 require "singleton"
 
-# The registry class acts as a cache for the in memory implementation
-
 module RateLimiter
+    
+    # The registry class acts as a cache for the in memory implementation
+
     class Registry
         include Singleton
         

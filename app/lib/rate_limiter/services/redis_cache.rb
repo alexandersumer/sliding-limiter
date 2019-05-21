@@ -8,20 +8,20 @@ module RateLimiter
 			@redis = $redis
 		end
 
-		def increment(parent_key, child_key)
-			@redis.HINCRBY(parent_key, child_key, 1)
+		def increment(requestor_key, timestamp)
+			@redis.HINCRBY(requestor_key, timestamp, 1)
 		end
 
-		def get_keys(parent_key)
-			return @redis.HKEYS(parent_key).map { |x| x.to_i }
+		def get_keys(requestor_key)
+			return @redis.HKEYS(requestor_key).map { |x| x.to_i }
 		end
 
-		def get_values(parent_key)
-			return @redis.HVALS(parent_key).map { |x| x.to_i }
+		def get_values(requestor_key)
+			return @redis.HVALS(requestor_key).map { |x| x.to_i }
 		end
 
-		def delete(parent_key, entries_to_delete)
-			@redis.HDEL(parent_key, entries_to_delete)
+		def delete(requestor_key, entries_to_delete)
+			@redis.HDEL(requestor_key, entries_to_delete)
 		end
 		
 		def flush

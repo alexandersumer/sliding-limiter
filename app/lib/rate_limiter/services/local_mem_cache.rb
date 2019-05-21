@@ -9,36 +9,36 @@ module RateLimiter
 			@registry = Registry.instance
 		end
 
-		def increment(parent_key, child_key)
-			buckets = @registry.get(parent_key)
+		def increment(requestor_key, timestamp)
+			buckets = @registry.get(requestor_key)
 			
 			if !buckets
-				@registry.set(parent_key, {})
-				buckets = @registry.get(parent_key)
+				@registry.set(requestor_key, {})
+				buckets = @registry.get(requestor_key)
 			end
 
-			if !buckets[child_key]
-				buckets[child_key] = 1
+			if !buckets[timestamp]
+				buckets[timestamp] = 1
 			else
-				buckets[child_key] = buckets[child_key] + 1
+				buckets[timestamp] = buckets[timestamp] + 1
 			end
 		end
 
-		def get_keys(parent_key)
-			buckets = @registry.get(parent_key)
+		def get_keys(requestor_key)
+			buckets = @registry.get(requestor_key)
 			return buckets.keys.map { |x| x.to_i } if buckets
             []
 		end
 
-		def get_values(parent_key)
-			buckets = @registry.get(parent_key)
+		def get_values(requestor_key)
+			buckets = @registry.get(requestor_key)
 			return buckets.values.map { |x| x.to_i } if buckets
 			[]
 		end
 
-		def delete(parent_key, to_delete)
+		def delete(requestor_key, to_delete)
 			to_delete
-			buckets = @registry.get(parent_key)
+			buckets = @registry.get(requestor_key)
 			to_delete.each { |x| buckets.delete(x) }
 		end
 		

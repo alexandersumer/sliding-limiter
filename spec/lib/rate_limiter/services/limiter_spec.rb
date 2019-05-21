@@ -11,7 +11,7 @@ RSpec.describe RateLimiter::Limiter do
             limiter.increment("0.0.0.0")
             limiter.increment("0.0.0.0")
             expect(limiter.is_blocked?("0.0.0.0")).to eq true
-            puts "(LIMITER TEST) Scenario: is_blocked? returns true following spam | *PASSED*"
+            puts "(Limiter Test) Scenario: is_blocked? returns true following spam | *PASSED*"
         end
     end
 
@@ -23,7 +23,7 @@ RSpec.describe RateLimiter::Limiter do
             limiter.increment("0.0.0.0")
             error_message = "Rate limit exceeded. Try again in 3 seconds"
             expect(limiter.get_error_message("0.0.0.0")).to eq error_message
-            puts "(LIMITER TEST) Scenario: get_error_message returns correct message following spam | *PASSED*"
+            puts "(Limiter Test) Scenario: get_error_message returns correct message following spam | *PASSED*"
         end
     end
 
@@ -47,8 +47,7 @@ RSpec.describe RateLimiter::Limiter do
             sleep(1)
             expect(limiter.is_blocked?("0.0.0.0")).to eq false
             limiter.increment("0.0.0.0")
-
-            puts "(LIMITER TEST) Scenario: One request per second | *PASSED*"
+            puts "(Limiter Test) Scenario: One request per second | *PASSED*"
         end
     end
 
@@ -67,8 +66,7 @@ RSpec.describe RateLimiter::Limiter do
             limiter.increment("0.0.0.0")
             expect(limiter.is_blocked?("0.0.0.0")).to eq false
             limiter.increment("0.0.0.0")
-
-            puts "(LIMITER TEST) Scenario: Two zero one two pattern | *PASSED*"
+            puts "(Limiter Test) Scenario: Two zero one two pattern | *PASSED*"
         end
     end
 end

@@ -17,7 +17,7 @@ class HomeController < ActionController::Base
 		local_mem_cache = LocalMemCache.new
 
 		limiter = RateLimiter::LimiterClient.new(
-			"unique_id", threshold, interval, accuracy, CacheClient.new(redis_cache)
+			"handle_authentication_requests", threshold, interval, accuracy, CacheClient.new(redis_cache)
 		)
 
 		if limiter.is_blocked?(request.ip)

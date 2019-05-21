@@ -1,7 +1,9 @@
 # app/lib/rate_limiter/services/redis_cache.rb
 
+require_relative "./cache_interface"
+
 module RateLimiter
-	class RedisCache
+	class RedisCache < Cache
 		def initialize
 			@redis = $redis
 		end

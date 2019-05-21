@@ -1,9 +1,10 @@
 # app/lib/rate_limiter/services/local_mem_cache.rb
 
 require_relative "./registry"
+require_relative "./cache_interface"
 
 module RateLimiter
-	class LocalMemCache
+	class LocalMemCache < Cache
 		def initialize
 			@registry = Registry.instance
 		end

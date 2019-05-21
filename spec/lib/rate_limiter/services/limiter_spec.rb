@@ -1,4 +1,4 @@
-# spec/lib/services/limiter_spec.rb
+# spec/lib/rate_limiter/services/limiter_spec.rb
 
 RSpec.describe RateLimiter::Limiter do
     subject { described_class }

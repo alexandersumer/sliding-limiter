@@ -16,7 +16,7 @@ module RateLimiter
 		#								A value of 4 means 1/4 second granularity
 		# @param [Object]	cache		An instance of a cache object mapping keys to
 		#								hash maps, extends Cache class from CacheInterface
-		def initialize(key, threshold, interval, accuracy, cache = RedisCache.new)
+		def initialize(key, threshold, interval, accuracy, cache = CacheClient.new(RedisCache.new))
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)
 		end
 

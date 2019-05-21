@@ -2,6 +2,7 @@
 
 require_relative '../lib/rate_limiter/services/redis_cache'
 require_relative '../lib/rate_limiter/services/local_mem_cache'
+require_relative '../lib/rate_limiter/services/cache_client'
 
 class HomeController < ActionController::Base
 	before_action :rate_limit
@@ -11,12 +12,14 @@ class HomeController < ActionController::Base
 	def rate_limit
 		threshold = THRESHOLD
 		interval = INTERVAL
-		accuracy = 4
+		accuracy = ACCURACY
 		redis_cache = RedisCache.new
 		local_mem_cache = LocalMemCache.new
+
 		limiter = RateLimiter::LimiterClient.new(
-			"unique_id", threshold, interval, accuracy, redis_cache
+			"unique_id", threshold, interval, accuracy, CacheClient.new(redis_cache)
 		)
+
 		if limiter.is_blocked?(request.ip)
 			render status: TOO_MANY_REQUESTS, plain: limiter.get_error_message(request.ip)
 		else

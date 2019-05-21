@@ -9,7 +9,7 @@ module RateLimiter
 		# number of requests that were made in that slice of time.
 		# Once a bucket falls outside the current time window, it is deleted.
 		
-		def initialize(key, threshold, interval, accuracy, cache = RedisCache.new)
+		def initialize(key, threshold, interval, accuracy, cache = CacheClient.new(RedisCache.new))
 			@key = key				# [String]	Identifier for current instance
 			@threshold = threshold 	# [Integer]	Max number of requests per time window
 			@interval = interval	# [Integer]	Number of seconds per time window

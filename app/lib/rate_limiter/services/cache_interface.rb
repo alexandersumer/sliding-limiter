@@ -38,15 +38,13 @@ end
 class Cache
 	include CacheInterface
 
-	# increments value associated with child_key by 1 if exists,
+	# increments value associated with timestamp by 1 if exists,
 	# else create a new entry and set it to 1
-	abstract_method :increment, :parent_key, :child_key
+	abstract_method :increment, :requestor_key, :timestamp
 	# retreives list of all keys in the hash associated with parent key
-	abstract_method :get_keys, :parent_key
+	abstract_method :get_keys, :requestor_key
 	# retreives list of all values in the hash associated with parent key
-	abstract_method :get_keys, :parent_key
+	abstract_method :get_keys, :requestor_key
 	# delete entries associated with keys in entries_to_delete
-	abstract_method :delete, :parent_key, :entries_to_delete
-	# clear the cache
-	abstract_method :flush
+	abstract_method :delete, :requestor_key, :entries_to_delete
 end

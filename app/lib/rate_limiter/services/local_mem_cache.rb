@@ -3,41 +3,41 @@
 require_relative "./registry"
 
 module RateLimiter
-	class LocalMemoryCache
+	class LocalMemCache
 		def initialize
 			@registry = Registry.instance
 		end
 
-		def increment(key, bucket)
-			buckets = @registry.get(key)
+		def increment(parent_key, child_key)
+			buckets = @registry.get(parent_key)
 			
 			if !buckets
-				@registry.set(key, {})
-				buckets = @registry.get(key)
+				@registry.set(parent_key, {})
+				buckets = @registry.get(parent_key)
 			end
 
-			if !buckets[bucket]
-				buckets[bucket] = 1
+			if !buckets[child_key]
+				buckets[child_key] = 1
 			else
-				buckets[bucket] = buckets[bucket] + 1
+				buckets[child_key] = buckets[child_key] + 1
 			end
 		end
 
-		def get_keys(key)
-			buckets = @registry.get(key)
+		def get_keys(parent_key)
+			buckets = @registry.get(parent_key)
 			return buckets.keys.map { |x| x.to_i } if buckets
             []
 		end
 
-		def get_values(key)
-			buckets = @registry.get(key)
+		def get_values(parent_key)
+			buckets = @registry.get(parent_key)
 			return buckets.values.map { |x| x.to_i } if buckets
 			[]
 		end
 
-		def delete(key, to_delete)
+		def delete(parent_key, to_delete)
 			to_delete
-			buckets = @registry.get(key)
+			buckets = @registry.get(parent_key)
 			to_delete.each { |x| buckets.delete(x) }
 		end
 		

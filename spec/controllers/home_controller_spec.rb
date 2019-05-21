@@ -6,7 +6,14 @@ class MockHomeController < ActionController::Base
 	include RateLimiter
 
 	def rate_limit
-		limiter = RateLimiter::LimiterClient.new("key", request.ip, 3, 3, 4)
+		threshold = 3
+		interval = 3
+		accuracy = 4 # if you lower accurate, not all the tests will pass
+		redis_cache = RedisCache.new
+		local_mem_cache = LocalMemCache.new
+		limiter = RateLimiter::LimiterClient.new(
+			"key", threshold, interval, accuracy, redis_cache
+		)
 		if limiter.is_blocked?(request.ip)
 			render status: TOO_MANY_REQUESTS, plain: limiter.get_error_message(request.ip)
 		else
@@ -26,7 +33,8 @@ RSpec.describe MockHomeController, type: :controller do
 
 	describe 'rate_limit' do
 		it 'block requestor if more than 3 requests within 3 seconds' do
-			# Scenario: 3 consecutive requests then sleep for 3 seconds
+			# Scenario 1: 3 x OK then 1 x TOO_MANY_REQUESTS consecutively
+
 			get :index
 			expect(response.status).to eq OK
 
@@ -38,10 +46,12 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			puts "Scenario 1: PASSED"
 
 			sleep(3)
 
-			# Scenario: 3 consecutive requests then sleep for 3 seconds
+			# Scenario 2: 3 x OK then 3 x TOO_MANY_REQUESTS consecutively
 
 			get :index
 			expect(response.status).to eq OK
@@ -54,10 +64,18 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			puts "Scenario 2: PASSED"
 
 			sleep(3)
 
-			# Scenario: 1 request every second, TOO_MANY_REQUESTS on every 3rd second
+			# Scenario 3: 1 x OK every second, 1 x TOO_MANY_REQUESTS on every 3rd second
 
 			get :index
 			expect(response.status).to eq OK
@@ -92,14 +110,16 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			puts "Scenario 3: PASSED"
 
 			sleep(2)
 
-			# Scenario: second 1 => 2 x OK
-			#           second 2 => 1 x OK
-			#           second 3 => 0
-			#           second 4 => 2 x OK
-			#           second 5 => 1 x OK and 1 x TOO_MANY_REQUESTS
+			# Scenario 4:	second 1 => 2 x OK
+			#				second 2 => 1 x OK
+			#				second 3 => 0
+			#				second 4 => 2 x OK
+			#				second 5 => 1 x OK and 1 x TOO_MANY_REQUESTS
 
 			get :index
 			expect(response.status).to eq OK
@@ -127,6 +147,8 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			puts "Scenario 4: PASSED"
 		end
 	end
 end

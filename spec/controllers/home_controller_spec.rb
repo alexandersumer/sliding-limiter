@@ -32,9 +32,8 @@ RSpec.describe MockHomeController, type: :controller do
 	end
 
 	describe 'rate_limit' do
-		it 'block requestor if more than 3 requests within 3 seconds' do
-			# Scenario 1: 3 x OK then 1 x TOO_MANY_REQUESTS consecutively
-
+		it 'block requestor if more than 3 requests within 3 seconds' do\
+			# Scenario 1: 3 x OK then 3 x TOO_MANY_REQUESTS consecutively
 			get :index
 			expect(response.status).to eq OK
 
@@ -47,35 +46,17 @@ RSpec.describe MockHomeController, type: :controller do
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
 
-			puts "Scenario 1: PASSED"
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			puts "(CONTROLLER TEST) Scenario: Spam pattern | *PASSED*"
 
 			sleep(3)
 
-			# Scenario 2: 3 x OK then 3 x TOO_MANY_REQUESTS consecutively
-
-			get :index
-			expect(response.status).to eq OK
-
-			get :index
-			expect(response.status).to eq OK
-
-			get :index
-			expect(response.status).to eq OK
-
-			get :index
-			expect(response.status).to eq TOO_MANY_REQUESTS
-
-			get :index
-			expect(response.status).to eq TOO_MANY_REQUESTS
-
-			get :index
-			expect(response.status).to eq TOO_MANY_REQUESTS
-
-			puts "Scenario 2: PASSED"
-
-			sleep(3)
-
-			# Scenario 3: 1 x OK every second, 1 x TOO_MANY_REQUESTS on every 3rd second
+			# Scenario 2: 1 x OK every second, 1 x TOO_MANY_REQUESTS on every 3rd second
 
 			get :index
 			expect(response.status).to eq OK
@@ -111,11 +92,11 @@ RSpec.describe MockHomeController, type: :controller do
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
 
-			puts "Scenario 3: PASSED"
+			puts "(CONTROLLER TEST) Scenario: One request per second pattern | *PASSED*"
 
 			sleep(2)
 
-			# Scenario 4:	second 1 => 2 x OK
+			# Scenario 3:	second 1 => 2 x OK
 			#				second 2 => 1 x OK
 			#				second 3 => 0
 			#				second 4 => 2 x OK
@@ -148,7 +129,7 @@ RSpec.describe MockHomeController, type: :controller do
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
 
-			puts "Scenario 4: PASSED"
+			puts "(CONTROLLER TEST) Scenario: Two one zero two one 429 pattern | *PASSED*"
 		end
 	end
 end

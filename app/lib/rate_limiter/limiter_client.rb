@@ -15,14 +15,7 @@ module RateLimiter
 		#								A value of 1 means 1 second granularity
 		#								A value of 4 means 1/4 second granularity
 		# @param [Object]	cache		An instance of a cache object mapping keys to
-		#								hash maps, providing the following functionality:
-		#								increment(parent_key, child_key):
-		#									increments value associated with child_key by 1 if exists,
-		#									else create a new entry and set it to 1
-		#								get_keys(parent_key): retreives list of keys
-		#								get_values(parent_key): retreives a list of values
-		#								delete(parent_key, to_delete):
-		#									delete entries associated with keys in to_deelte
+		#								hash maps, extends Cache class from CacheInterface
 		def initialize(key, threshold, interval, accuracy, cache = RedisCache.new)
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)
 		end

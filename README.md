@@ -112,7 +112,7 @@ The sliding window approach can be implemented in two ways.
 
  * One way is to store the timestamps of all requests and then remove any timestamps that go outside the current interval. This approach guarantees correctness but time and space complexities grow with number of requests which depends on user input.
  
- * The other approach is to treat an interval as a series of discrete buckets, labelled by timestamps, starting at `Time.now - interval` and ending at `Time.now` and the width of each bucket is determined by the accuracy value. Accuracy is traded for performance.
+ * Another approach is to treat a window as a series of discrete buckets, labelled by timestamps, starting at Time.now - interval and ending at Time.now. The width of each bucket is determined by the accuracy value. Accuracy is traded for performance since more buckets increase precision but require more space and take longer time to process.
  
 How the sliding window rate limiter works:
 

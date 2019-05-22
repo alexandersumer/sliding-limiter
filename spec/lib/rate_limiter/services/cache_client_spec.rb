@@ -19,7 +19,6 @@ RSpec.describe RateLimiter::CacheClient do
             cache_client.increment("requestor2_key", "124")
             expect(cache_client.get_keys("requestor2_key")).to eq [124]
             expect(cache_client.get_values("requestor2_key")).to eq [2]
-            puts "(CacheClient Test) increment method | *PASSED*"
         end
     end
 
@@ -33,7 +32,6 @@ RSpec.describe RateLimiter::CacheClient do
             cache_client.delete("requestor2_key", [123, 124])
             expect(cache_client.get_keys("requestor2_key")).to eq []
             expect(cache_client.get_values("requestor2_key")).to eq []
-            puts "(CacheClient Test) delete method | *PASSED*"
         end
     end
 end

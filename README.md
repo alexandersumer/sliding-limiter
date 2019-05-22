@@ -86,9 +86,9 @@ Testing is done using rspec, run the following command to run all tests:
 
 Testing is done at the 1 second scale. More extensive testing at the microsecond scale seemed unnecessary.
 
-If the accuracy value is changed, for example, from the default (2) to 1, then some tests will fail.
+If the accuracy value is changed, for example, from the default 4 to 1, then some tests may fail.
 
-Explanation: Suppose that each bucket in a window represents 1 second and the rate limit is 1 req/s. If a requestor sends 1 request in the second half of second 1 and another request in first half of second 2, then the rate limit of 1 req/s is violated. Why? Between half second one and half second 2 is a 1 second interval and we did 2 requests.
+Explanation: Suppose each bucket in a window represents 1 second and the rate limit is 1 req/s. If a requestor sends 1 request in the second half of second 1 and another request in first half of second 2, then the rate limit of 1 req/s is violated. Why? Between half second one and half second 2 is a 1 second interval and we did 2 requests.
 
 The following table shows how the pass rate of the tests changes with different accuracy values. The rate limit used in these tests is 3 requests per 3 seconds. `rspec` was ran 100 times for each accuracy value and the results are as follow:
 

@@ -130,7 +130,7 @@ There are two ways to do this:
 
  * run `sleep(interval)` at the start of time based tests to reset the rate limiter counts but this is not great because it will cause tests to run even longer
  
- * Using a fake cache. I ran into a lot of trouble trying to set up a fake cache because I couldn't find one that worked properly. guilleiguaran/fakeredis isn't well maintained and the build is failing. I considered using a local hash to simulate redis but that's lame. So I decided to just go with a live redis instance for testing.
+ * Using a fake cache. I ran into a lot of trouble trying to set up a fake cache because I couldn't find one that worked properly. guilleiguaran/fakeredis isn't well maintained and the build is failing. I considered using a local memory hash to simulate redis but I decided to just go with a live redis instance for testing because it is a better representation of how the module will be used in production.
 
 In terms of performance, I think a circular buffer is worth considering. Modelling an interval as a circular buffer means we don't have to perform expensive deletions and instead overright values once we loop around. The problem with this approach is that the bucket names cannot be the actual UNIX time but instead we have to use (UNIX time % interval). This makes a few things more complicated, for example, it makes it more difficult to work out the cooldown period since right now we rely on the name of the bucket being the UNIX time to perform that calculation.
 

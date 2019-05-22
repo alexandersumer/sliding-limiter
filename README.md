@@ -78,7 +78,7 @@ end
 
 Testing is done using rspec, run the following command to run all tests:
 
-`rspec`
+`$ rspec`
 
 Testing is done at the 1 second scale, they guarantee accuracy at 1 second time buckets. More extensive testing guaranteeing accuracy at the microsecond interval seemed unnecessary.
 

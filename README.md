@@ -6,7 +6,7 @@ Hello, this is my first ever rails application! I really enjoyed learning this f
 
 The following usage instructions are for Mac (will be similar to Linux).
 
-This application requires: Ruby, Rails, Bundler and Redis.
+This application requires: Ruby (I tested on 2.5.5 and 2.6.3), Rails, Bundler and Redis.
 
 To install redis, run the command:
 

@@ -19,15 +19,15 @@ module RateLimiter
 		#								hash maps, extends Cache class from CacheInterface
 		def initialize(key, threshold, interval, accuracy, cache = CacheClient.new(RedisCache.new))
 			if !(threshold.is_a?(Integer)) && threshold < 0
-				raise "Threshold must be a positive integer."
+				raise "threshold must be a positive integer."
 			end
 
 			if !(interval.is_a?(Integer)) && interval < 0
-				raise "Interval must be a positive integer."
+				raise "interval must be a positive integer."
 			end
 
 			if !(accuracy).is_a?(Numeric)
-				raise "Accuracy must be a number."
+				raise "accuracy must be a number."
 			end
 
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)

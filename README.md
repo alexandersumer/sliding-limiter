@@ -16,6 +16,10 @@ A live redis instance is required for this application as well as for running rs
 
 `$ redis-server`
 
+Now clone the repo:
+
+`$ git clone git@github.com:alexanderj2357/sliding-limiter.git`
+
 Navigate to the application root directory. If running the application for the first time, the required dependancies can be installed using the command:
 
 `$ bundle install`

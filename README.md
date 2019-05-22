@@ -41,7 +41,7 @@ The constructor takes in the following arguments:
  * key: a unique identifier used as part of the cache key to retreive bucket hashes for requestors sharing the same Limiter instance and cache
  * threshold: the maximum number of requests a requestor can make within 1 interval
  * interval: length of 1 a full window of time (Time.now - interval ago) in secodns
- * accuracy: a float representing accuracy of rate limiter (can it guarantee x req per y time?) the accuracy of the rate limiter increases the more buckets we have for each interval. A value of 1 means each interval is divided into buckets(time slots) 1 second each. A value of 4 means the interval is divided into 4 * 1 second buckets, so representing 1/4 seconds each.
+ * accuracy: a float representing accuracy of rate limiter (can it guarantee x req per y time?) the accuracy of the rate limiter increases the more buckets we have for each interval. A value of 1 means each interval is divided into buckets(time slots) 1 second each. A value of 4 means the interval is divided into 4 buckets for each second (0.25s time slots), so representing 1/4 seconds each.
  * cache: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`.
 
 ```ruby

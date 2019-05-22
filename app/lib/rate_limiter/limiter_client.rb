@@ -10,14 +10,26 @@ module RateLimiter
 		# Create a LimiterClient object.
 		#
 		# @param [String]	key			A unique identifier for Limiter
-		# @param [Integer]	threshold	Maximum number of allowed requests per time window
-		# @param [Integer]	interval	Number of seconds per time window
+		# @param [Integer]	threshold	Maximum number of allowed requests per time window, > 0
+		# @param [Integer]	interval	Number of seconds per time window, > 0
 		# @param [Integer]	accuracy	Higher value trades performance for more accuracy
 		#								A value of 1 means 1 second granularity
 		#								A value of 4 means 1/4 second granularity
 		# @param [Object]	cache		An instance of a cache object mapping keys to
 		#								hash maps, extends Cache class from CacheInterface
 		def initialize(key, threshold, interval, accuracy, cache = CacheClient.new(RedisCache.new))
+			if !(threshold.is_a?(Integer)) && threshold < 0
+				raise "Threshold must be a positive integer."
+			end
+
+			if !(interval.is_a?(Integer)) && interval < 0
+				raise "Interval must be a positive integer."
+			end
+
+			if !(accuracy).is_a?(Numeric)
+				raise "Accuracy must be a number."
+			end
+
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)
 		end
 

@@ -48,8 +48,6 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
-
-			puts "(Controller Test) Scenario: Spam pattern | *PASSED*"
 		end
 
 		it "One request per second pattern" do
@@ -88,8 +86,24 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+			
+			sleep(1)
 
-			puts "(Controller Test) Scenario: One request per second pattern | *PASSED*"
+			get :index
+			expect(response.status).to eq OK
+
+			sleep(1)
+
+			get :index
+			expect(response.status).to eq OK
+
+			sleep(1)
+
+			get :index
+			expect(response.status).to eq OK
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
 		end
 
 		it "Two one zero two one 429 pattern" do
@@ -121,8 +135,11 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq TOO_MANY_REQUESTS
+			
+			sleep(1)
 
-			puts "(Controller Test) Scenario: Two one zero two one 429 pattern | *PASSED*"
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
 		end
 	end
 end

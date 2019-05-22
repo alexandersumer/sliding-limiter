@@ -6,7 +6,7 @@ class HomeController < ActionController::Base
 	include RateLimiter
 
 	def rate_limit
-		limiter = RateLimiter::LimiterClient.new("handle_authentication_requests", THRESHOLD, INTERVAL, ACCURACY)
+		limiter = RateLimiter::LimiterClient.new("handle_requests", THRESHOLD, INTERVAL, ACCURACY)
 
 		if limiter.is_blocked?(request.ip)
 			render status: TOO_MANY_REQUESTS, plain: limiter.get_error_message(request.ip)

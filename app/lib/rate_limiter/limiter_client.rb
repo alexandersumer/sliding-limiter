@@ -26,8 +26,12 @@ module RateLimiter
 				raise "interval must be a positive integer."
 			end
 
-			if !(accuracy).is_a?(Numeric)
+			if !(accuracy.is_a?(Numeric))
 				raise "accuracy must be a number."
+			end
+
+			if !(cache.is_a?(CacheClient))
+				raise "cache must implement CacheClient."
 			end
 
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)

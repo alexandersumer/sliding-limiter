@@ -1,6 +1,6 @@
 # Sliding window rate limiter module for Ruby on Rails
 
-Hello, this is my first ever rails application! I really enjoyed learning this framework, it's very pleasant to work with.
+Hello, this is my first rails application! I really enjoyed learning this framework, it's very pleasant to work with.
 
 ## Application Usage
 
@@ -20,7 +20,7 @@ Now clone the repo:
 
 `$ git clone git@github.com:alexanderj2357/sliding-limiter.git`
 
-Navigate to the application root directory. If running the application for the first time, the required dependancies can be installed using the command:
+Navigate to the application root directory. If running the application for the first time, the required dependencies can be installed using the command:
 
 `$ bundle install`
 
@@ -38,10 +38,10 @@ The RateLimiter module exposes 3 methods and a constructor through the class Lim
 
 The constructor takes in the following arguments:
 
- * key: a unique identifier used as part of the cache key to retreive bucket hashes for requestors sharing the same Limiter instance and cache
+ * key: a unique identifier used as part of the cache key to retrieve bucket hashes for requestors sharing the same Limiter instance and cache
  * threshold: the maximum number of requests a requestor can make within 1 interval
- * interval: length of 1 a full window of time (Time.now - interval ago) in secodns
- * accuracy: a float representing accuracy of rate limiter (can it guarantee x req per y time?) the accuracy of the rate limiter increases the more buckets we have for each interval. A value of 1 means each interval is divided into buckets(time slots) 1 second each. A value of 4 means the interval is divided into 4 buckets for each second (0.25s time slots), so representing 1/4 seconds each.
+ * interval: length of 1 a full window of time (Time.now - interval ago) in seconds
+ * accuracy: a float representing how leniency of the rate limiter. Higher values make the limiter more strict. A value of 1 means each window is divided up into 1 second buckets, a value of 4 means 1/4 second buckets, etc.
  * cache: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`.
 
 ```ruby
@@ -84,33 +84,40 @@ Testing is done using rspec, run the following command to run all tests:
 
 `$ rspec`
 
-Testing is done at the 1 second scale, they guarantee accuracy at 1 second time buckets. More extensive testing guaranteeing accuracy at the microsecond interval seemed unnecessary.
+Testing is done at the 1 second scale. More extensive testing at the microsecond scale seemed unnecessary.
 
-If the accuracy value is changed, for example, from 4 to 1, some of the tests will fail because this introduces in accuracies. For example, if each bucket represents 1 second and the rate limit is 1 request per second, then if a requestor does 1 request in the second half of second 1 and the next request in the first half of second 2, then our 1 second window is violated. Why? Between half second one and half second 2 is 1 second interval and we did 2 requests in one second violating the 1req/s rule. To deal with this inaccuracy, the accuracy value passed into the LimiterClient constructor can be increased.
+If the accuracy value is changed, for example, from the default (4) to 1, then some tests will fail.
 
-If the accuracy value is changes to 1, then the unit tests will sometimes pass and sometimes fail depending on the exact time each request is fired within each 1 second bucket. According to my statistical tests (about 30 repetitions), with an accuracy value of 1, unit tests will pass about 40% of the time (with existing test setup). With an accuracy value of 2, unit tests will pass about 80% of the time. With an accuracy value of 4, unit tests will pass 100% of the time.
+Explanation: Suppose that each bucket in a window represents 1 second and the rate limit is 1 req/s. If a requestor sends 1 request in the second half of second 1 and another request in first half of second 2, then the rate limit of 1 req/s is violated. Why? Between half second one and half second 2 is a 1 second interval and we did 2 requests.
 
 ## System design
 
-If you look back through my commit history, you will see that I initially started with a fixed window implementation. However, edge case tests didn't pass this that implementation, showing that it was simply inaccurate. The edge cases that were failing are touched upon in the Testing section of this document. In short, if you treat each interval as fixed, and then block the user for the remainder of that interval, then the user can send more requests than the rate limiter should allow (up to 2x the threshold) and if the requestor is blocked for a full interval, then this is also incorrect because if they spam at half way through the window and get blocked for a full window then this means they can do a maximum of threashold requests in 1.5 intervals. 
+If you look back through my commit history, you will see that I initially started with a fixed window implementation. A fixed window approach is attractive because it is simple and performant. However, it does not guarantee the rate limit specified holds as explained in the testing section because it is too lenient.
 
-I decided to change my implementation from a fixed window to a sliding window to deal with these iaccuracies. Changing the implementation was an important part of the system design process because it put me into the shoes of someone trying to extend this implementation. As a result I made a few changes to the design to make it more plug-and-play friendly.
+I decided to change my implementation from a fixed window to a sliding window. Changing the implementation was an important part of the system design process because it put me into the shoes of someone trying to extend this implementation.
 
-The sliding window apporach can be implemented in two ways. One way is to store the timestamps of all requests and then remove any timestamps that go outside the current interval. This approach is accurate but time and space complexitiesn grow with number of requests, which depends on user input. The other approach is to treat an interval as a series of discrete buckets, labelled by timestamps, starting at `Time.now - interval` and ending at Time.now and the width (accuracy) is determinsed by the user. Accuracy is traded for performance. Higher accuracy has higher space and time compexities.
+The sliding window approach can be implemented in two ways.
 
-Suppose each bucket represents 1 second. When a requst comes in we get the current UNIX time and round it to the nearest integer value. This will be the key for the bucket in this requestors bucket->count hashmap. if the bucket contains a value, then we incrment it, elsif the bucket contains no value, then we set the value to 1.
+ * One way is to store the timestamps of all requests and then remove any timestamps that go outside the current interval. This approach guarantees correctness but time and space complexities grow with number of requests which depends on user input.
+ 
+ * The other approach is to treat an interval as a series of discrete buckets, labelled by timestamps, starting at `Time.now - interval` and ending at `Time.now` and the width of each bucket is determined by the accuracy value. Accuracy is traded for performance.
+ 
+How the sliding window rate limiter works:
 
-Each time we check if a requestor is blocked, we need to get the total count of requests between Time.now and an interval ago (current window). To do this accurately, we first need to delete all buckets that fall outside the current window. Deletion is O(number of entries in hashmap). This can be a big number if the value of accuracy is high. However, in a practical scenario, e.g. suppose we want to rate limit to 100 requests per hour, then an accuracy value of 1/60 would be reasonable, allowing for 1 minute buckets, which is 60 buckets per window per user.
-
+ * Suppose each bucket represents 1 second. When a request comes in we get the current UNIX time and round it to the nearest integer value. This will be the key for the bucket in this requestors buckets hashmap, mapping buckets to counts.
+ * If the bucket contains a value, then we increment it, else if the bucket contains no value, then we set the value to 1.
+ * Each time we check if a requestor is blocked, we need to get the total count of requests between Time.now and an interval ago.
+ * Before we get the count we need to delete all buckets that fall outside the current window. Higher accuracy values will result in more expesive deletions because we have more buckets per window.
+ 
 The system is designed such that the implementation of the cache is abstracted away. Any key-value store can be used as long as it provides the following basic functionality:
 
 ```ruby
 # increments value associated with timestamp by 1 if exists,
 # else create a new entry and set it to 1
 increment(requestor_key, timestamp)
-# retreives list of all keys in the hash associated with parent key
+# retrieves list of all keys in the hash associated with parent key
 get_keys(requestor_key)
-# retreives list of all values in the hash associated with parent key
+# retrieves list of all values in the hash associated with parent key
 get_keys(requestor_key)
 # delete entries associated with keys in entries_to_delete
 delete(requestor_key, entries_to_delete)
@@ -120,11 +127,11 @@ The reason I decided to use an 'interface' for the cache rather than just relyin
 
 In terms of running this rate limiter module in production on a distributed system, a redis cluster can be used but it has some drawbacks:
 
- * Redis clusters use a master-slave architecutre, with multiple slave replicas for a master. This is prone to SPOF.
+ * Redis clusters use a master-slave architecture, with multiple slave replicas for a master. This is prone to SPOF.
  * Redis doesn't have built-in compression. They keys to our buckets are UNIX time, this they have overlapping prefixes, which can be compressed to reduce memory usage.
  * Network delay associated with reading and writing from a remote server can result in inaccuracies
 
-Another approach would be to use a local memory cache on each node with a services that regularly synchronises the counts in an eventually consistent manner to some datastore like mongodb. This is because load balancers have a sticky session feature these days, so a locasl memory cache means it is highly likely we get correct counts for users being directed to the same node by the LB.
+Another approach would be to use a local memory cache on each node with a services that regularly synchronises the counts in an eventually consistent manner to some datastore like mongodb. This is because load balancers have a sticky session feature these days, so a local memory cache means it is highly likely we get correct counts for users being directed to the same node by the LB.
 
 ## Limitations and enhancements
 
@@ -136,8 +143,10 @@ There are two ways to do this:
  
  * Using a fake cache. I ran into a lot of trouble trying to set up a fake cache because I couldn't find one that worked properly. `guilleiguaran/fakeredis` isn't well maintained anymore and the build is failing. I considered using a local memory hash to simulate redis but I decided to just go with a live redis instance for testing because it is a better representation of how the module will be used in production.
 
-In terms of performance, I think a circular buffer is worth considering. Modelling an interval as a circular buffer means we don't have to perform expensive deletions and instead overright values once we loop around. The problem with this approach is that the bucket names cannot be the actual UNIX time but instead we have to use (UNIX time % interval). This makes a few things more complicated, for example, it makes it more difficult to work out the cooldown period since right now we rely on the name of the bucket being the UNIX time to perform that calculation.
+In terms of performance, I think a circular buffer is worth considering. Modelling an interval as a circular buffer means we don't have to perform expensive deletions and instead overwrite values once we loop around. The problem with this approach is that the bucket names cannot be the actual UNIX time but instead we have to use (UNIX time % interval). This makes a few things more complicated, for example, it makes it more difficult to work out the cooldown period since right now we rely on the name of the bucket being the UNIX time to perform that calculation.
 
-In terms of flexibility, one enhanacement I can think of is passing the threshold and interval into the `is_blocked` and `increment` methods rather than the constructor so that we can have different rates for different users. We can store the rates for each user in our cache, which means we have to modify the cache interface a little to expose set and get methods.
+In terms of flexibility, one enhancement I can think of is passing the threshold and interval into the `is_blocked` and `increment` methods rather than the constructor so that we can have different rates for different users. We can store the rates for each user in our cache, which means we have to modify the cache interface a little to expose set and get methods.
 
 The rate limiter can also benefit from exposing `whitelist` and `blacklist` methods to allow certain users unrestricted access (whitelist) and completely ban some users (blacklist).
+
+

@@ -63,6 +63,7 @@ increment(requestor_id)
 Here is an example use case:
 
 ```ruby
+# rate limit requestors to 100 requests in any 1 hour interval with correctness guaranteed at scares greater than 1 second
 limiter = RateLimiter::LimiterClient.new("handle_authentication_requests", 100, 3600, 1)
 
 if limiter.is_blocked?(request.ip)

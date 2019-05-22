@@ -31,10 +31,6 @@ module RateLimiter
 				raise "accuracy must be a number."
 			end
 
-			if !(cache.is_a?(CacheClient))
-				raise "cache must implement CacheClient."
-			end
-
 			@limiter = RateLimiter::Limiter.new(key, threshold, interval, accuracy, cache)
 		end
 

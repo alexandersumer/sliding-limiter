@@ -3,6 +3,7 @@
 require_relative './services/limiter'
 require_relative './services/redis_cache'
 require_relative './services/local_mem_cache'
+require_relative './services/cache_client'
 
 module RateLimiter
 	class LimiterClient

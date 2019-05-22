@@ -26,6 +26,8 @@ To start the application, run the command:
 
 Navigate to `http://localhost:3000/` and the message "You are welcome!" should be printed. If 100 requests are made to `http://localhost:3000/` within 1 hour, a 429 HTTP Status is returned along with the error message: "Rate limit exceeded. Try again in #{cooldown} seconds"
 
+Docker support will be pushed once I get it working so that you can run this anywhere ;)
+
 ## Module Usage
 
 The RateLimiter module exposes 3 methods and a constructor through the class LimiterClient:

@@ -8,7 +8,7 @@ class MockHomeController < ActionController::Base
 	def rate_limit
 		threshold = 3
 		interval = 3
-		accuracy = 4 # if you lower accuracy, not all the tests will pass
+		accuracy = 5
 
 		limiter = RateLimiter::LimiterClient.new("key", threshold, interval, accuracy)
 		if limiter.is_blocked?(request.ip)
@@ -106,7 +106,7 @@ RSpec.describe MockHomeController, type: :controller do
 			expect(response.status).to eq TOO_MANY_REQUESTS
 		end
 
-		it "Two one zero two one 429 pattern" do
+		it "Two one 429 two one 429 pattern" do
 			$redis.flushdb
 
 			get :index
@@ -120,7 +120,12 @@ RSpec.describe MockHomeController, type: :controller do
 			get :index
 			expect(response.status).to eq OK
 
-			sleep(2)
+			sleep(1)
+
+			get :index
+			expect(response.status).to eq TOO_MANY_REQUESTS
+
+			sleep(1)
 
 			get :index
 			expect(response.status).to eq OK
@@ -132,9 +137,6 @@ RSpec.describe MockHomeController, type: :controller do
 
 			get :index
 			expect(response.status).to eq OK
-
-			get :index
-			expect(response.status).to eq TOO_MANY_REQUESTS
 			
 			sleep(1)
 

@@ -133,3 +133,7 @@ There are two ways to do this:
  * Using a fake cache. I ran into a lot of trouble trying to set up a fake cache because I couldn't find one that worked properly. guilleiguaran/fakeredis isn't well maintained and the build is failing. I considered using a local hash to simulate redis but that's lame. So I decided to just go with a live redis instance for testing.
 
 In terms of performance, I think a circular buffer is worth considering. Modelling an interval as a circular buffer means we don't have to perform expensive deletions and instead overright values once we loop around. The problem with this approach is that the bucket names cannot be the actual UNIX time but instead we have to use (UNIX time % interval). This makes a few things more complicated, for example, it makes it more difficult to work out the cooldown period since right now we rely on the name of the bucket being the UNIX time to perform that calculation.
+
+In terms of flexibility, one enhanacement I can think of is passing the threshold and interval into the `is_blocked` and `increment` methods rather than the constructor so that we can have different rates for different users. We can store the rates for each user in our cache, which means we have to modify the cache interface a little to expose set and get methods.
+
+The rate limiter can also benefit from exposing `whitelist` and `blacklist` methods to allow certain users unrestricted access (whitelist) and completely ban some users (blacklist).

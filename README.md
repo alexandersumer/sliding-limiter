@@ -116,10 +116,10 @@ The sliding window approach can be implemented in two ways.
  
 How the sliding window rate limiter works:
 
- * Suppose each bucket represents 1 second. When a request comes in we get the current UNIX time and round it to the nearest integer value. This will be the key for the bucket in this requestors buckets hashmap, mapping buckets to counts.
+ * Suppose each bucket represents 1 second. When a request comes in we get the current UNIX time, multiply it by the `accuracy` value and round it to the nearest integer value. This will be the key for the bucket in this requestors buckets hashmap, mapping buckets to counts.
  * If the bucket contains a value, then we increment it, else if the bucket contains no value, then we set the value to 1.
  * Each time we check if a requestor is blocked, we need to get the total count of requests between Time.now and an interval ago.
- * Before we get the count we need to delete all buckets that fall outside the current window. Higher accuracy values will result in more expesive deletions because we have more buckets per window.
+ * Before we get the count we need to make a call to `delete_expired_buckets` to delete all buckets outside the current window. Higher accuracy values will result in more expesive deletions because we have more buckets per window.
  
 The system is designed such that the implementation of the cache is abstracted away. Any key-value store can be used as long as it provides the following basic functionality:
 

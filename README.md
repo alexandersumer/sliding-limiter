@@ -38,11 +38,11 @@ The RateLimiter module exposes 3 methods and a constructor through the class Lim
 
 The constructor takes in the following arguments:
 
- * key: a unique identifier used as part of the cache key to retrieve bucket hashes for requestors sharing the same Limiter instance and cache
- * threshold: the maximum number of requests a requestor can make within 1 interval
- * interval: length of 1 a full window of time (Time.now - interval ago) in seconds
- * accuracy: a float representing how leniency of the rate limiter. Higher values make the limiter more strict. A value of 1 means each window is divided up into 1 second buckets, a value of 4 means 1/4 second buckets, etc.
- * cache: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`.
+ * `key`: a unique identifier used as part of the cache key to retrieve bucket hashes for requestors sharing the same Limiter instance and cache
+ * `threshold`: the maximum number of requests a requestor can make within 1 interval
+ * `interval`: length of 1 a full window of time (Time.now - interval ago) in seconds
+ * `accuracy`: a float representing how leniency of the rate limiter. Higher values make the limiter more strict. A value of 1 means each window is divided up into 1 second buckets, a value of 4 means 1/4 second buckets, etc.
+ * `cache`: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`.
 
 ```ruby
 initialize(key, threshold, interval, accuracy, cache = RedisCache.new)

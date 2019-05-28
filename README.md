@@ -42,10 +42,10 @@ The constructor takes in the following arguments:
  * `threshold`: the maximum number of requests a requestor can make within 1 interval
  * `interval`: length of 1 a full window of time (Time.now - interval ago) in seconds
  * `accuracy`: a float representing how leniency of the rate limiter. Higher values make the limiter more strict. A value of 1 means each window is divided up into 1 second buckets, a value of 4 means 1/4 second buckets, etc.
- * `cache`: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`.
+ * `cache`: a key-value store where the value is another key-value store. Must implement the abstract methods in `CacheInterface::Cache`, this is set to a Redis by default.
 
 ```ruby
-initialize(key, threshold, interval, accuracy, cache = RedisCache.new)
+initialize(key, threshold, interval, accuracy)
 ```
 
 To call this method, pass in the ID of the requestor (IPv6 is a good choice since it is unique). This method has a side effect since it makes a call to delete_expired_buckets, which deletes all buckets outside the current interval. The decision to have this side effect was made to expose less of the internal implementation to the user.
